@@ -1,0 +1,292 @@
+------------------------------------------------------------------------------------------------------------------------------------------
+/* === INNER LAYOUT WITH SEPARATOR ======================================= */
+.property-panel,
+.mode-panel{
+  width: 100%;
+  padding: 0px 0px 0px 0px;                 /* inner breathing room */
+}
+
+/* keep corners perfectly rounded */
+.property-panel{
+  height: 900px;  
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+/* bottom box keeps the lower corners */
+.mode-panel{
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+  flex: 1;                            /* fill remaining height */
+}
+
+/* separator line between the two boxes */
+.property-panel{
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* OPTIONAL: give the top box a slightly lighter bg so users recognise it */
+.property-panel{
+  background: #242424;
+  stroke-width:1px ;
+  stroke:#cccccc ;
+}
+.mode-panel{
+  background: #212121;    
+  stroke: #cccccc;            /* same as parent – looks seamless */
+}
+
+/* make sure the parent card stacks them vertically */
+.controlling-panel{
+  display: flex;
+  flex-direction: column;
+  gap: 0;                             /* no extra gap; the border handles it */
+}
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+exclusively for Mozilla firefox:
+
+  .temp-control input[type="range"]::-moz-range-track {
+    height: 4px;
+    background: #f8fcf9;
+    border-radius: 2px;
+  }
+
+  .temp-control input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #cccccc;
+    border-radius: 50%;
+    cursor: pointer; 
+}
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+this code is for the dropdown menu, earlier we had this inline within html, but now we have moved this logic to a separate app.js file
+    <!-- <script>
+        const dropdown = document.querySelector('.select-mode-dropdown');
+        const header   = dropdown.querySelector('.dropdown-header span');
+        const items    = dropdown.querySelectorAll('.dropdown-content a');
+      
+        // 1) toggle menu open/close
+        dropdown.querySelector('.dropdown-header')
+                .addEventListener('click', e => {
+                  dropdown.classList.toggle('open');
+                });
+      
+        // 2) select an item
+        items.forEach(item => {
+          item.addEventListener('click', e => {
+            e.preventDefault();
+            header.textContent = item.querySelector('.item-text').textContent;
+            dropdown.classList.remove('open');
+          });
+        });
+      
+        // 3) reset on clicking the menu‐icon
+        dropdown.querySelector('.menu-icon')
+                .addEventListener('click', e => {
+                  e.stopPropagation();
+                  header.textContent = 'Select Mode';
+                  dropdown.classList.remove('open');
+                });
+    </script> -->
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+the entire app.js by 12th june 20:30
+
+/* app.js -------------------------------------------------------------- */
+
+/* 1.  Static help text for each mode */
+const modeMessages = {
+  "De Novo Generation": `
+    <h3>Structural Input</h3>
+    <p>Generate completely novel molecules from scratch based on desired properties.</p>
+    <p>No structural inputs required. Configure property filters below to guide generation.</p>
+  `,
+  "Scaffold Decoration": `
+    <h3>Scaffold Input</h3>
+    <p>Decorate provided scaffolds with optimal R-groups.</p>
+    <p>Upload a core structure, then set desired properties below.</p>
+  `,
+  "Fragment Linking": `
+    <h3>Fragment Input</h3>
+    <p>Link two fragments with novel linkers.</p>
+    <p>Provide fragment SMILES, then tune filters to guide the linker design.</p>
+  `,
+  "Molecular Transformation": `
+    <h3>Transformation Input</h3>
+    <p>Suggest structurally similar molecules or modifications.</p>
+    <p>Input your starting molecule, and adjust transformation settings below.</p>
+  `,
+  "Peptide Design": `
+    <h3>Peptide Input</h3>
+    <p>Generate peptide sequences matching your criteria.</p>
+    <p>No structural input required. Adjust sequence and property constraints below.</p>
+  `,
+  "Select Mode": `
+    <h3>Welcome to MolGPT</h3>
+    <p>Select a mode to start generating.</p>
+  `
+};
+
+/* 2.  Dropdown logic + temperature readout */
+document.addEventListener('DOMContentLoaded', () => {
+  /* --- mode dropdown ------------------------------------------------ */
+  const dropdown      = document.querySelector('.select-mode-dropdown');
+  const headerSpan    = dropdown.querySelector('.dropdown-header span');
+  const items         = dropdown.querySelectorAll('.dropdown-content a');
+  const messageHolder = document.getElementById('mode-message');
+  
+  /*  NEW: reference the scaffold-only form-group   */
+  const scaffoldRow    = document.getElementById('mode-scaffold-row');   // NEW location
+  const scaffoldInput  = document.getElementById('scaffold-smiles');
+
+  /* show/hide the extra input depending on mode */
+  function switchInputs(mode) {
+    scaffoldRow.style.display = (mode === 'Scaffold Decoration') ? 'flex' : 'none';
+  }
+
+  messageHolder.innerHTML = modeMessages["Select Mode"];
+
+  dropdown.querySelector('.dropdown-header')
+          .addEventListener('click', () => dropdown.classList.toggle('open'));
+
+  dropdown.querySelector('.menu-icon')
+          .addEventListener('click', e => {
+            e.stopPropagation();
+            headerSpan.textContent = 'Select Mode';
+            dropdown.classList.remove('open');
+            messageHolder.innerHTML = modeMessages["Select Mode"];
+          });
+
+  items.forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      const modeName = item.querySelector('.item-text').textContent;
+      headerSpan.textContent = modeName;
+      dropdown.classList.remove('open');
+      messageHolder.innerHTML = modeMessages[modeName] || '';
+      switchInputs(modeName);
+    });
+  });
+  switchInputs(headerSpan.textContent)
+
+  /* --- live temperature label -------------------------------------- */
+  const tempInput = document.getElementById('temperature');
+  const tempValue = document.querySelector('.temp-value');
+  tempInput.addEventListener('input', () => {
+    tempValue.textContent = parseFloat(tempInput.value).toFixed(1);
+  });
+
+  /* --- samples input handling -------------------------------------- */
+  const samplesInput = document.getElementById('num-samples');
+  
+  // Clear value on focus
+  samplesInput.addEventListener('focus', () => {
+    samplesInput.value = '';
+  });
+  
+  // Set back to 0 if empty on blur
+  samplesInput.addEventListener('blur', () => {
+    if (samplesInput.value === '') {
+      samplesInput.value = '0';
+    }
+  });
+});
+
+/* 3.  Generate-button handler (single source of truth) --------------- */
+document.getElementById('generateButton').addEventListener('click', async () => {
+  const mode        = document.querySelector('.dropdown-header span').textContent;
+  const samples     = +document.getElementById('num-samples').value;
+  const temperature = +document.getElementById('temperature').value;
+  const scaffoldInput = document.getElementById('scaffold-smiles');
+  const scaffold = scaffoldInput ? scaffoldInput.value.trim() : '';
+  const panel       = document.getElementById('results-panel');
+
+  if (!samples || samples < 1) {
+    panel.textContent = 'Please enter a sample size ≥ 1.';
+    return;
+  }
+
+  panel.innerHTML = '<p>Generating … please wait ⏳</p>';
+
+  try {
+    const res = await fetch('http://127.0.0.1:8000/generate-molecules', {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify({ samples, temperature, mode, scaffold })
+    });
+    if (!res.ok) throw new Error(await res.text());
+
+    const { generated_molecules, total_generated, valid_molecules } = await res.json();
+
+    panel.innerHTML = `
+      <p>Generated ${total_generated} molecules, ${valid_molecules} valid.</p>
+      <div id="mol-list"></div>
+    `;
+    const list = document.getElementById('mol-list');
+    generated_molecules.forEach((m,i) => {
+      list.insertAdjacentHTML(
+        'beforeend',
+        `<div><span>${i+1}:</span> <code>${m.smiles}</code> ${m.valid ? '' : '<span style="color:red">(invalid)</span>'}</div>`
+      );
+    });
+
+  } catch (err) {
+    panel.innerHTML = `<p style="color:red">Error: ${err.message}</p>`;
+    console.error(err);
+  }
+});
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+/* === File-upload control (matches <input> aesthetic) ================ */
+.file-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+/* hide the real input, we’ll click the label instead */
+.file-upload__input {
+  display: none;
+}
+
+/* clickable area */
+.file-upload__label {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.file-upload__btn {
+  background: #e5e7eb;             /* same grey as disabled text box */
+  color: #374151;                  /* slate-700 */
+  padding: .35rem .75rem;
+  border-radius: .375rem;          /* 6 px – matches your inputs */
+  font-size: .875rem;              /* 14 px */
+  font-weight: 500;
+  line-height: 1;
+  transition: background .15s ease;
+}
+
+.file-upload__btn:hover {
+  background: #d1d5db;             /* slightly darker on hover */
+}
+
+.file-upload__filename {
+  font-size: .825rem;
+  color: #6b7280;                  /* slate-500 */
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

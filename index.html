@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swati AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="panel">
+        <div class="left-half">
+            <div class="title-container">
+                <img src="svg and png files/blur-circular.png" alt="MolGPT Logo" class="title-logo">
+                <span class="title-text">MolGPT</span>
+            </div>
+            <div class="select-mode-dropdown">
+                <div class="dropdown-header">
+                    <img src="svg and png files/dropmenu.svg" alt="Menu Icon" class="menu-icon">
+                    <span>Select Mode</span>
+                    <img src="svg and png files/droparrow.svg" alt="Dropdown Arrow" class="dropdown-arrow">
+                </div>
+                <div class="dropdown-content">
+                    <a href="#"><span class="item-text">De Novo Generation</span></a>
+                    <a href="#"><span class="item-text">Scaffold Decoration</span></a>
+                    <a href="#"><span class="item-text">Fragment Linking</span></a>
+                    <a href="#"><span class="item-text">Molecular Transformation</span></a>
+                    <a href="#"><span class="item-text">Peptide Design</span></a>
+                </div>
+            </div>
+            <!-- 1) Controlling Panel -->
+            <div class="controlling-panel">
+            <!-- your toggles/sliders will live here -->
+            <div class="mode-zone" id="mode-panel"><!-- JS will inject mode-specific inputs here -->
+              <div class="mode-message" id="mode-message">
+                <!-- Message will be injected here -->
+              </div>
+              <!-- ▾▾ ADD THIS BLOCK ▾▾ -->
+              <div class="mode-scaffold-row" id="mode-scaffold-row" style="display:none">
+                <label for="scaffold-smiles">Scaffold SMILES</label>
+                <input
+                  type="text"
+                  id="scaffold-smiles"
+                  placeholder="e.g. C1CCCCC1"
+                />
+                <!--  ▾▾ replace old file input block ▾▾ -->
+                <div class="file-upload">
+                  <input type="file"
+                        id="scaffold-file"
+                        accept=".smi"
+                        class="file-upload__input" />
+                  <label for="scaffold-file" class="file-upload__label">
+                    <span class="file-upload__btn">Upload *.smi</span>
+                    <span class="file-upload__filename">No file chosen</span>
+                  </label>
+                </div>
+              </div>
+              <!-- ▴▴ ADD THIS BLOCK ▴▴ -->
+            </div>
+            <div class="property-zone">
+                <form class="property-form">
+                  <!-- Samples -->
+                  <div class="form-group">
+                    <label for="num-samples">Samples</label>
+                    <input
+                      type="number"
+                      id="num-samples"
+                      name="num_samples"
+                      min="1"
+                      max="500"
+                      step="1"
+                      value="0"
+                    />
+                  </div>
+              
+                  <!-- Temperature -->
+                  <div class="form-group">
+                    <label for="temperature">Temperature</label>
+                    <div class="temp-control">
+                      <input
+                        type="range"
+                        id="temperature"
+                        name="temperature"
+                        min="0"
+                        max="2"
+                        step="0.1"
+                        value="1"
+                        onfocus="this.value=''"
+                        onblur="if(this.value=='') this.value='0'"
+                      />
+                      <span class="temp-value">1.0</span>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              
+            </div>
+            <!-- 2) RL Policy Panel -->
+            <div class="rl-policy-panel">
+            <!-- your policy charts or settings go here -->
+             <button id="generateButton" type="button">Generate</button>
+            </div>
+        </div>
+
+        <div class="right-half">
+          <!--Results will be displayed here-->
+          <div class="results-panel" id="results-panel">
+            <!-- JS will inject a list of molecules here -->
+          </div>
+        </div>
+    </div>
+    <script src="app.js" defer></script>
+</body>
+</html>
+
+

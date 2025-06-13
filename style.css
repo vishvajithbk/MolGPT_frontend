@@ -1,0 +1,526 @@
+/* ===== RESET/FOUNDATION ===== */
+*{box-sizing:border-box;padding:0;margin:0}
+
+:root {
+  /* Font Family */
+  --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+body{
+    font-family: var(--font-primary);
+    background:#eef2f5;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:#3C3C3C;
+}
+
+/* ===== LAYOUT ===== */
+.panel{
+    width:calc(100% - 30px);
+    height:calc(100% - 30px);
+    margin:10px;
+    display:flex;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+/* optional: stop body scrolling behind the panel */
+html,body { height: 100%; overflow: hidden; }
+
+.left-half{
+    flex:1;
+    background:#FFFFFF;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    padding: 32px 40px 0 40px; 
+    gap: 20px;       /* vertical gap between elements */
+}
+
+.right-half{
+    flex:1;
+    background:#ffffff;
+    border-left:solid #f8f8f8 1.5px;
+    padding: 32px 40px;  /* Match left-half padding */
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== TITLE STRAP ===== */
+.title-container{
+    display:flex;
+    align-items:center;
+    margin-bottom:16px;
+}
+.title-logo{
+    width:32px;height:32px;
+}
+.title-text{
+    font-size:20px;
+    font-weight:650;
+    color:#3C3C3C
+}
+
+/* ===== DROPDOWN ===== */
+.select-mode-dropdown{
+    width:246px;
+    position:relative;
+    user-select:none;
+    align-self: flex-start;
+}
+
+/* --- button --- */
+.dropdown-header{
+    background:#eef2f5;
+    font-size:14px;
+    font-weight: 500;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 12px;
+    border-radius:100px;          
+    cursor:pointer;
+    transition:background .15s ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,0);
+}
+
+.dropdown-header:hover{background:#e2e8f0;}
+
+.menu-icon,
+.dropdown-arrow{
+    width:20px;height:20px;
+    filter:invert(75%);
+    flex-shrink:0;
+}
+.dropdown-arrow{margin-left:auto;transition:transform .2s ease;}
+
+/* --- menu --- */
+.dropdown-content{
+    position:absolute;
+    top:calc(100% + 8px);
+    min-width: 200px;
+    max-width: 60vw;
+    left: 40%;
+    background:#eef2f5;
+    border-radius:20px;
+    padding:8px 0;
+    box-shadow:0 6px 18px rgba(0,0,0,0.3);
+    display:none;                 /* toggled by .open */
+    z-index:2;
+}
+
+.dropdown-content a{
+    display:block;
+    position: relative;
+    padding: 10.5px 25px 10.5px 28.5px;
+    font-size:12px;
+    text-decoration:none;
+    color:#3c3c3c;
+    font-weight:500;
+}
+.dropdown-content a:not(:last-child){
+        position: relative;
+}
+
+.dropdown-content span,
+.dropdown-header span {
+    white-space: nowrap;
+}
+
+.dropdown-content a:hover::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 16px;         /* match the link's horizontal padding */
+    right: 16px;        /* ditto */
+    background: #d0d7e0;
+    border-radius: 8px; /* soft rounding inside the menu */
+    z-index: -1;        /* behind the text */
+}
+
+.dropdown-content a:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    /* match your text-padding to indent the line: */
+    left: 22px;
+    right: 22px;
+    bottom: 0;
+    height: 0.6px;
+    background:#d0d7e0;
+}
+
+/* ===== TOGGLE STATE ===== */
+.select-mode-dropdown.open .dropdown-content{display:block;}
+.select-mode-dropdown.open .dropdown-arrow{transform:rotate(180deg);}
+
+/* shared card base */
+.controlling-panel,
+.rl-policy-panel {
+  width: 100%;
+  max-width: 100%;
+  background: #eef2f5;                     /* same dark card color */
+  border-radius: 30px;                     
+  box-shadow: 0 6px 18px rgba(0,0,0,0);
+  padding: 10px;                           /* inner padding for content */
+}
+
+/* specific heights (tweak as you need) */
+.controlling-panel {
+  height: 500px;                            /* shallow bar for toggles */
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─────────────────────────────────────────────
+   MODE ZONE: fixed-height, no inner scroll,
+   uniform padding everywhere
+──────────────────────────────────────────────*/
+.mode-zone {
+  flex: 3; /* sizing & look - 2 parts of the whole*/
+  margin-bottom: 10px;
+  border: 0.1px solid #C4C4C4;
+  border-radius: 22px;
+  background: #ffffff;
+
+  /* Remove fixed height constraints */
+  min-height: fit-content;  /* Allow it to grow with content */
+  max-height: 200px;         /* Remove height cap */
+
+  /* layout */
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;      /* Increased vertical padding for better spacing */
+  gap: 4px;               /* Add consistent gap between elements */
+}
+
+/* ─────────────  help text block  ─────────────*/
+.mode-message {
+  font-size: 14px;
+  color: #3c3c3c;
+  line-height: 1;
+  margin-bottom: 0px;      /* Increased margin to create more space between message and scaffold form */
+}
+
+.mode-message h3 {
+  margin: 0 0 1em 0;       /* Slightly reduced bottom margin */
+  font-size: 1.08rem;
+  font-weight: 650;
+  color: #3c3c3c;
+}
+
+.mode-message p { 
+  margin: 0 0 0.75em 0;    /* Add consistent bottom margin */
+}
+
+/* Add a new class to control scaffold form spacing */
+.mode-scaffold-form {
+  margin-top: 8px;         /* Add some top margin to the scaffold form */
+  width: 100%;             /* Ensure it takes full width */
+}
+
+/* Update scaffold row to be inside the form */
+.mode-scaffold-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 450;
+  color: #3c3c3c;
+  flex-wrap: wrap;
+  padding: 4px 0;
+  margin-bottom: 12px;     /* Add space between multiple scaffold rows if they exist */
+}
+
+.mode-scaffold-row:last-child {
+  margin-bottom: 0;        /* Remove bottom margin from last row */
+}
+
+.mode-scaffold-row label { white-space: nowrap; }
+
+.mode-scaffold-row input[type="text"] {
+  flex: 1;
+  background: #b7c0cb;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 14px;
+  font-weight: 450;
+  opacity: .85;
+}
+
+.mode-scaffold-row input:focus { outline: none; box-shadow: none; }
+
+#scaffold-smiles {
+  flex: 1 1 200px;            /* grow, shrink, min width 240 px             */
+  min-width: 0;               /* lets it shrink inside a flex container     */
+}
+
+/* === File-upload control (matches <input> aesthetic) ================ */
+.file-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  flex: 0 0 100%;
+}
+
+/* hide the real input, we'll click the label instead */
+.file-upload__input {
+  display: none;
+}
+
+/* clickable area */
+.file-upload__label {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.file-upload__btn {
+  background: #e5e7eb;             /* same grey as disabled text box */
+  color: #374151;                  /* slate-700 */
+  padding: .35rem .75rem;
+  border-radius: .375rem;          /* 6 px – matches your inputs */
+  font-size: .875rem;              /* 14 px */
+  font-weight: 500;
+  line-height: 1;
+  transition: background .15s ease;
+}
+
+.file-upload__btn:hover {
+  background: #d1d5db;             /* slightly darker on hover */
+}
+
+.file-upload__filename {
+  font-size: .825rem;
+  color: #6b7280;                  /* slate-500 */
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+
+
+/* ─── PROPERTY ZONE STARTS ─────────────────────────────────── */
+.property-zone {
+    flex: 2;                /* 3 parts out of total */
+    padding: 10px 2px;
+    border-radius: 22px;
+    border: solid #C4C4C4 0.1px;
+    background-color: #ffffff;
+    position: relative;
+}
+
+/* ─── PROPERTY ZONE FORM ───────────────────────────────────────────── */
+  
+  .property-form {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    height: 100%;
+    padding: 0 35px;          /* inner gutter matching your cards */
+    flex-wrap: wrap;
+  }
+  
+  .property-form .form-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color:#3c3c3c;
+    font-weight: 450;
+  }
+  
+  /* — Number input styling — */
+  .property-form input[type="number"] {
+    width: 80px;
+    background: #b7c0cb;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-size: 14px;
+    font-weight: 450;
+    opacity: 0.8;
+    font-family: var(--font-primary);
+  }
+  
+  input:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  
+  /* — Temperature control wrapper — */
+  .temp-control {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: #b7c0cb;
+    border-radius: 6px;
+    padding: 4px 6px;
+    gap: 8px;
+  }
+  
+  /* — Range slider styling — */
+  .temp-control input[type="range"] {
+    flex: 1;
+    margin: 0;
+    appearance: none;
+    background: transparent;
+  }
+  
+  /* Track */
+  .temp-control input[type="range"]::-webkit-slider-runnable-track {
+    height: 4px;
+    background: #f8fcf9;
+    border-radius: 2px;
+  }
+  
+  /* Thumb */
+  .temp-control input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #f8fcf9;
+    border-radius: 50%;
+    margin-top: -6px;  /* center on track */
+    cursor: pointer;
+  }
+  
+  /* — Live readout — */
+  .temp-control .temp-value {
+    width: 40px;
+    text-align: right;
+    font-size: 14px;
+    font-weight: 450;
+    color: #3c3c3c;
+  }
+
+
+/* ─── RL Policy Panel Details ───────────────────────────────────────────── */
+
+.rl-policy-panel {
+  height: 90px;                           
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+#generateButton {/* Changed from .generate-btn */
+    padding: 10px 25px;
+    border: none;
+    border-radius: 999px;
+    font-size: 1.12rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(130deg, #b7c0cb 0%, #626d7b 10%);
+    box-shadow: 0 6px 10px rgba(80,90,120,0.10);
+    cursor: pointer;
+    transition: background 2s, transform 0.13s;
+    outline: none;
+}
+#generateButton:hover, #generateButton:focus{ /* Changed from .generate-btn */
+    background: linear-gradient(90deg, #4c5560 0%, #838a93 100%);
+    transform: translateY(-2px) scale(1.035);
+}
+ 
+
+
+/* ─── Right side Results Panel Details ───────────────────────────────────────────── */
+
+.results-panel {
+    background: #EEF2F5;
+    border-radius: 25px;
+    /* Take full height of right-half minus padding */
+    height: calc(100% - 64px);
+    margin-top: 32px;
+    /* Enable smooth scrolling */
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Add some padding inside the panel */
+    padding: 24px;
+    /* Font styling */
+    font-family: var(--font-primary);
+    font-size: 14px;
+    line-height: 1.6;
+    color: #3c3c3c;
+
+    /* Ensure panel doesn't grow beyond its container */
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+.results-panel::-webkit-scrollbar {
+    width: 0px;  /* For vertical scrollbar */
+    background: transparent; /* Make the scrollbar track transparent */
+}
+
+.results-panel::-webkit-scrollbar-thumb {
+    background: transparent; /* Make the scrollbar thumb transparent */
+}
+
+/* Hide scrollbar for Firefox */
+.results-panel {
+    scrollbar-width: none;  /* "none" to hide scrollbar */
+}
+
+/* Style for the molecule list */
+#mol-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+    width: 100%;  /* Take full width of parent */
+}
+
+#mol-list div {
+    background: white;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid #e1e5ec;
+    font-family: Menlo, monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    width: 100%;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+#mol-list code {
+    background: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #2c3e50;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    flex-shrink: 1;
+}
+
+/* Style for the generation status message */
+.results-panel p {
+    margin: 0 0 16px 0;
+    font-weight: 500;
+}
+
+.results-panel p b {
+    color: #EEF2F5;
+}
+
+/* Style for error messages */
+.results-panel p[style*="color:red"] {
+    background: #fff5f5;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #fed7d7;
+    margin-bottom: 16px;
+}
